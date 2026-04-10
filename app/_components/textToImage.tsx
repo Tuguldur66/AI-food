@@ -22,10 +22,12 @@ export const TextToImage = () => {
       const image = await client.textToImage({
         provider: "nscale",
         model: "stabilityai/stable-diffusion-xl-base-1.0",
-        inputs: prompt,
+        inputs: `you are chef and you will make food about ${prompt}`,
         parameters: { num_inference_steps: 5 },
       });
-      const imageObjectURL = URL.createObjectURL(image);
+      const imageObjectURL =
+        typeof image === "string" ? image : URL.createObjectURL(image);
+      setImgSrc(imageObjectURL);
       setImgSrc(imageObjectURL);
     } finally {
       setLoading(false);
