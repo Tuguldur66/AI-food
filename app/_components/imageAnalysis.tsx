@@ -4,7 +4,7 @@ import { ChangeEventHandler, useState } from "react";
 import { InferenceClient } from "@huggingface/inference";
 import { RotateCw, Sparkles, FileText, Loader2 } from "lucide-react";
 
-const token = process.env.NEXT_PUBLIC_HUGGINFACE_API_KEY;
+const token = process.env.HUGGINFACE_API_KEY;
 const client = new InferenceClient(token);
 
 const fileToBase64 = (file: File): Promise<string> =>

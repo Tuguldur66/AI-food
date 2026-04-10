@@ -5,7 +5,7 @@ import { InferenceClient } from "@huggingface/inference";
 import { RotateCw, Sparkles, Image, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
-const token = process.env.NEXT_PUBLIC_HUGGINFACE_API_KEY;
+const token = process.env.HUGGINFACE_API_KEY;
 const client = new InferenceClient(token);
 
 export const TextToImage = () => {

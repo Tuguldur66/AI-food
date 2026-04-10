@@ -6,7 +6,7 @@ import { RotateCw, Sparkles, FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 const groq = new Groq({
-  apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY!,
+  apiKey: process.env.GROQ_API_KEY!,
   dangerouslyAllowBrowser: true,
 });
 
