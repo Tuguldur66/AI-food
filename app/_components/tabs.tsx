@@ -12,7 +12,7 @@ import { IngredientRecog } from "./ingredientRecog";
 
 export default function Tab() {
   return (
-    <Tabs defaultValue="overview" className="w-100 ">
+    <Tabs defaultValue="Image analysis" className="w-100 ">
       <TabsList>
         <TabsTrigger value="Image analysis">Image analysis</TabsTrigger>
         <TabsTrigger value="Ingredient recognition">

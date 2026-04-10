@@ -1,14 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Groq from "groq-sdk";
 import { RotateCw, Sparkles, FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY!,
-  dangerouslyAllowBrowser: true,
-});
 
 export const IngredientRecog = () => {
   const [prompt, setPrompt] = useState("");
@@ -21,25 +15,36 @@ export const IngredientRecog = () => {
     setResponse("");
 
     try {
-      const result = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a culinary expert. When the user describes a food dish, list all the likely ingredients needed to make it. Format your response as a clear bullet list.",
-          },
-          {
-            role: "user",
-            content: `What are the ingredients in: ${prompt}`,
-          },
-        ],
+      const res = await fetch("/api/ingredients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
       });
 
-      const text = result.choices[0].message.content ?? "";
-      setResponse(text);
+      const rawText = await res.text();
+      console.log("Raw response:", rawText);
+      console.log("Status:", res.status);
+
+      if (!res.ok) {
+        console.error("API failed with status:", res.status, rawText);
+        setResponse("Something went wrong. Please try again.");
+        return;
+      }
+
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr) {
+        console.error("Failed to parse JSON:", parseErr, rawText);
+        setResponse("Something went wrong. Please try again.");
+        return;
+      }
+
+      setResponse(data.result || "No result returned.");
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
       setResponse("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

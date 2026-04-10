@@ -1,11 +1,8 @@
 "use client";
 
 import { ChangeEventHandler, useState } from "react";
-import { InferenceClient } from "@huggingface/inference";
 import { RotateCw, Sparkles, FileText, Loader2 } from "lucide-react";
-
-const token = process.env.HUGGINFACE_API_KEY;
-const client = new InferenceClient(token);
+import ReactMarkdown from "react-markdown";
 
 const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -27,28 +24,20 @@ export const ImageAnalysis = () => {
   const generateImage = async () => {
     if (!selectedImage) return;
 
+    const base64 = await fileToBase64(selectedImage);
+
     setLoading(true);
     try {
-      const base64 = await fileToBase64(selectedImage);
-      const chatCompletion = await client.chatCompletion({
-        model: "moonshotai/Kimi-K2.5:novita",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "i will upload a photo and you will detect all the ingredients.",
-              },
-              {
-                type: "image_url",
-                image_url: { url: `data:image/jpeg;base64,${base64}` },
-              },
-            ],
-          },
-        ],
+      const response = await fetch("/api/recognize", {
+        method: "POST",
+        body: JSON.stringify({
+          base64,
+        }),
       });
-      setResult(chatCompletion.choices[0].message.content ?? "");
+
+      const data = await response.json();
+
+      setResult(data?.result);
     } finally {
       setLoading(false);
     }
@@ -109,7 +98,7 @@ export const ImageAnalysis = () => {
               <span>Working ...</span>
             </div>
           ) : result ? (
-            <p className="text-sm mt-3">{result}</p>
+            <ReactMarkdown>{result}</ReactMarkdown>
           ) : (
             <p className="text-xs opacity-50 mt-3">
               First, enter your image to recognize an ingredients.

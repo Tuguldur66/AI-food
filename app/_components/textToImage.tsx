@@ -1,12 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { InferenceClient } from "@huggingface/inference";
 import { RotateCw, Sparkles, Image, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-
-const token = process.env.HUGGINFACE_API_KEY;
-const client = new InferenceClient(token);
 
 export const TextToImage = () => {
   const [prompt, setPrompt] = useState("");
@@ -14,21 +10,21 @@ export const TextToImage = () => {
   const [loading, setLoading] = useState(false);
 
   const generateImage = async () => {
-    if (!prompt.trim()) return; // dont generate if empty
+    if (!prompt.trim()) return;
 
     setLoading(true);
     setImgSrc(null);
     try {
-      const image = await client.textToImage({
-        provider: "nscale",
-        model: "stabilityai/stable-diffusion-xl-base-1.0",
-        inputs: `you are chef and you will make food about ${prompt}`,
-        parameters: { num_inference_steps: 5 },
+      const response = await fetch("/api/text", {
+        method: "POST",
+        body: JSON.stringify({ prompt }),
       });
-      const imageObjectURL =
-        typeof image === "string" ? image : URL.createObjectURL(image);
-      setImgSrc(imageObjectURL);
-      setImgSrc(imageObjectURL);
+
+      const data = await response.json();
+
+      if (data.base64) {
+        setImgSrc(`data:image/jpeg;base64,${data.base64}`);
+      }
     } finally {
       setLoading(false);
     }
